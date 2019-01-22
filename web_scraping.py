@@ -1,29 +1,26 @@
-from urllib.request import urlopen as uReq
-from bs4 import BeautifulSoup as soup
+import requests
+from bs4 import BeautifulSoup
 
 my_url = 'https://soundcloud.com/peggygou'
 
-# opening up connection, grabbing the page
-uClient = uReq(my_url)
-page_html = uClient.read()
-uClient.close()
+# request the page
+page = requests.get(my_url)
 
 # html parsing
-page_soup = soup(page_html, "html.parser")
+page_soup = BeautifulSoup(page.text, "html.parser")
 
-# grabs each song
+# grab each song
 containers = page_soup.findAll("article",{"class":"audible"})
 
 filename = "peggy_gou_tunes.csv"
-f = open(filename, "w")
 
-headers = "Tune\n"
+with open(filename, "w") as f:
 
-f.write(headers)
+    headers = "Tune\n"
 
-for container in containers:
-    song = container.a.text
+    f.write(headers)
 
-    f.write(song.replace(",", "|") + "\n")
+    for container in containers:
+        song = container.a.text
 
-f.close()
+        f.write(song.replace(",", "|") + "\n")
